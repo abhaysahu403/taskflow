@@ -1,0 +1,44 @@
+# ─── StorageClass ─────────────────────────────────────────────
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: taskflow-storage
+  namespace: taskflow
+provisioner: rancher.io/local-path   # Use 'docker.io/hostpath' for Docker Desktop
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+
+---
+# ─── PersistentVolume ─────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  namespace: taskflow
+  labels:
+    type: local
+    app: mysql
+spec:
+  storageClassName: taskflow-storage
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /data/taskflow/mysql
+
+---
+# ─── PersistentVolumeClaim ────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: taskflow
+spec:
+  storageClassName: taskflow-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
