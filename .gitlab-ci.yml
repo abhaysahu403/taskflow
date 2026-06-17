@@ -2,6 +2,7 @@ stages:
   - validate
   - frontend-build
   - backend-test
+  - security
 
 validate:
   stage: validate
@@ -23,7 +24,6 @@ frontend-build:
   artifacts:
     paths:
       - frontend/dist
-    expire_in: 1 week
 
 backend-test:
   stage: backend-test
@@ -36,3 +36,15 @@ backend-test:
   script:
     - node --version
     - npm list --depth=0
+
+trivy-fs-scan:
+  stage: security
+
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy fs . --format table
+
+  allow_failure: true
