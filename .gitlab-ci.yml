@@ -61,4 +61,14 @@ trivy-k8s-scan:
 
   allow_failure: true
 
-  
+trivy-helm-scan:
+  stage: security
+
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy config taskflow-chart/
+
+  allow_failure: true
