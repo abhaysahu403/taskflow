@@ -48,3 +48,17 @@ trivy-fs-scan:
     - trivy fs . --format table
 
   allow_failure: true
+
+trivy-k8s-scan:
+  stage: security
+
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy config k8s/
+
+  allow_failure: true
+
+  
