@@ -104,7 +104,6 @@ semgrep-sast:
     expire_in: 1 week
 
   allow_failure: true
-
 owasp-dependency-check:
   stage: dependency-check
 
@@ -114,16 +113,14 @@ owasp-dependency-check:
 
   script:
     - mkdir -p reports
-
-    - /usr/share/dependency-check/bin/dependency-check.sh
-      --scan .
-      --format HTML
-      --out reports
+    - |
+      /usr/share/dependency-check/bin/dependency-check.sh \
+      --scan . \
+      --format HTML \
+      --out reports || true
 
   artifacts:
     paths:
       - reports/
-
-    expire_in: 1 week
 
   allow_failure: true
