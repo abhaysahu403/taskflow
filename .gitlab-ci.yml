@@ -92,11 +92,10 @@ trivy-helm-scan:
 semgrep-sast:
   stage: sast
 
-  image:
-    name: semgrep/semgrep
+  image: returntocorp/semgrep
 
   script:
-    - semgrep scan --config auto --json --output semgrep-report.json
+    - semgrep --config=auto . --json --output semgrep-report.json
 
   artifacts:
     paths:
