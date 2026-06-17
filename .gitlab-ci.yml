@@ -45,7 +45,12 @@ trivy-fs-scan:
     entrypoint: [""]
 
   script:
-    - trivy fs . --format table
+    - trivy fs . --format json -o trivy-fs-report.json
+
+  artifacts:
+    paths:
+      - trivy-fs-report.json
+    expire_in: 1 week
 
   allow_failure: true
 
@@ -57,7 +62,12 @@ trivy-k8s-scan:
     entrypoint: [""]
 
   script:
-    - trivy config k8s/
+    - trivy config k8s/ --format json -o trivy-k8s-report.json
+
+  artifacts:
+    paths:
+      - trivy-k8s-report.json
+    expire_in: 1 week
 
   allow_failure: true
 
@@ -69,6 +79,11 @@ trivy-helm-scan:
     entrypoint: [""]
 
   script:
-    - trivy config taskflow-chart/
+    - trivy config taskflow-chart/ --format json -o trivy-helm-report.json
+
+  artifacts:
+    paths:
+      - trivy-helm-report.json
+    expire_in: 1 week
 
   allow_failure: true
