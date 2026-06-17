@@ -1,9 +1,38 @@
 stages:
   - validate
+  - frontend-build
+  - backend-test
 
 validate:
   stage: validate
-
   script:
     - echo "Pipeline Started"
     - echo "TaskFlow CI Working"
+
+frontend-build:
+  stage: frontend-build
+  image: node:20
+
+  before_script:
+    - cd frontend
+    - npm install
+
+  script:
+    - npm run build
+
+  artifacts:
+    paths:
+      - frontend/dist
+    expire_in: 1 week
+
+backend-test:
+  stage: backend-test
+  image: node:20
+
+  before_script:
+    - cd backend
+    - npm install
+
+  script:
+    - node --version
+    - npm list --depth=0
