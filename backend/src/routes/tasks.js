@@ -5,6 +5,25 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
+// GET /api/tasks/stats/summary - MUST be before /:id routes
+router.get('/stats/summary', authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status='todo' THEN 1 ELSE 0 END) as todo,
+        SUM(CASE WHEN status='in_progress' THEN 1 ELSE 0 END) as in_progress,
+        SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) as done,
+        SUM(CASE WHEN priority='high' THEN 1 ELSE 0 END) as \`high_priority\`
+      FROM tasks WHERE created_by = ? OR assigned_to = ?
+    `, [req.user.id, req.user.id]);
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    console.error('Stats error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // GET /api/tasks
 router.get('/', authMiddleware, async (req, res) => {
   const { status, priority, assigned_to } = req.query;
@@ -27,7 +46,7 @@ router.get('/', authMiddleware, async (req, res) => {
     const [rows] = await pool.execute(query, params);
     res.json({ success: true, data: rows });
   } catch (err) {
-    console.error(err);
+    console.error('Tasks GET error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -44,7 +63,7 @@ router.post('/', authMiddleware, async (req, res) => {
     );
     res.status(201).json({ success: true, message: 'Task created', id });
   } catch (err) {
-    console.error(err);
+    console.error('Task POST error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -61,6 +80,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     );
     res.json({ success: true, message: 'Task updated' });
   } catch (err) {
+    console.error('Task PUT error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -75,6 +95,7 @@ router.patch('/:id/status', authMiddleware, async (req, res) => {
     await pool.execute('UPDATE tasks SET status = ? WHERE id = ?', [status, req.params.id]);
     res.json({ success: true, message: 'Status updated' });
   } catch (err) {
+    console.error('Task PATCH status error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -90,24 +111,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     await pool.execute('DELETE FROM tasks WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'Task deleted' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// GET /api/tasks/stats
-router.get('/stats/summary', authMiddleware, async (req, res) => {
-  try {
-    const [rows] = await pool.execute(`
-      SELECT 
-        COUNT(*) as total,
-        SUM(status='todo') as todo,
-        SUM(status='in_progress') as in_progress,
-        SUM(status='done') as done,
-        SUM(priority='high') as high_priority
-      FROM tasks WHERE created_by = ? OR assigned_to = ?
-    `, [req.user.id, req.user.id]);
-    res.json({ success: true, data: rows[0] });
-  } catch (err) {
+    console.error('Task DELETE error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

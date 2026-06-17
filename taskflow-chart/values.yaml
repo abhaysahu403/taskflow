@@ -1,0 +1,25 @@
+namespace: taskflow
+
+frontend:
+  image: taskflow-frontend
+  tag: latest
+  replicas: 2
+
+backend:
+  image: taskflow-backend
+  tag: v5
+  replicas: 2
+
+mysql:
+  image: mysql
+  tag: "8.0"
+
+redis:
+  image: redis
+  tag: "7-alpine"
+
+storage:
+  size: 2Gi
+
+ingress:
+  host: taskflow.local

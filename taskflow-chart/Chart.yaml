@@ -1,0 +1,8 @@
+apiVersion: v2
+name: taskflow
+description: Full Stack Task Management Application
+type: application
+
+version: 0.1.0
+
+appVersion: "1.0.0"

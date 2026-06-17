@@ -9,7 +9,11 @@ const router = express.Router();
 // GET /api/products
 router.get('/', authMiddleware, async (req, res) => {
   const { category, search, page = 1, limit = 20 } = req.query;
-  const offset = (parseInt(page) - 1) * parseInt(limit);
+  
+  // Ensure valid integers
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 20;
+  const offset = (pageNum - 1) * limitNum;
 
   try {
     let query = `
@@ -21,14 +25,15 @@ router.get('/', authMiddleware, async (req, res) => {
     if (category) { query += ' AND p.category = ?'; params.push(category); }
     if (search)   { query += ' AND p.name LIKE ?'; params.push(`%${search}%`); }
     query += ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), offset);
+    params.push(limitNum, offset);
 
-    const [rows] = await pool.execute(query, params);
-    const [[{ total }]] = await pool.execute('SELECT COUNT(*) as total FROM products');
+    console.log('Products query params:', { limitNum, offset, params });
+    const [rows] = await pool.query(query, params);
+    const [[{ total }]] = await pool.query('SELECT COUNT(*) as total FROM products');
 
-    res.json({ success: true, data: rows, pagination: { total, page: parseInt(page), limit: parseInt(limit) } });
+    res.json({ success: true, data: rows, pagination: { total, page: pageNum, limit: limitNum } });
   } catch (err) {
-    console.error(err);
+    console.error('Products GET error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -43,6 +48,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     if (!rows.length) return res.status(404).json({ success: false, message: 'Product not found' });
     res.json({ success: true, data: rows[0] });
   } catch (err) {
+    console.error('Product GET by ID error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -82,6 +88,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     );
     res.json({ success: true, message: 'Product updated' });
   } catch (err) {
+    console.error('Product PUT error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -97,6 +104,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     await pool.execute('DELETE FROM products WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'Product deleted' });
   } catch (err) {
+    console.error('Product DELETE error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

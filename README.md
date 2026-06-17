@@ -81,7 +81,7 @@ taskflow/
 ├── mysql-init/
 │   └── 01-init.sql            # Schema + seed data
 │
-├── k8s/                       # Kubernetes manifests (in order)
+├── k8s/                       # Kubernetes manifests (manual deployment)
 │   ├── 00-namespace.yaml
 │   ├── 01-configmap-secret.yaml
 │   ├── 02-storage.yaml        # PV + PVC + StorageClass
@@ -91,7 +91,22 @@ taskflow/
 │   ├── 06-frontend.yaml       # Deployment + Service + HPA
 │   └── 07-ingress.yaml
 │
+├── taskflow-chart/            # Helm Chart (recommended deployment)
+│   ├── Chart.yaml             # Chart metadata
+│   ├── values.yaml            # Configurable values
+│   └── templates/             # Kubernetes manifest templates
+│       ├── configmap.yaml
+│       ├── secret.yaml
+│       ├── pvc.yaml
+│       ├── mysql.yaml
+│       ├── redis.yaml
+│       ├── backend.yaml
+│       ├── frontend.yaml
+│       ├── frontend-config.yaml
+│       └── ingress.yaml
+│
 ├── docker-compose.yml         # Local development
+├── HELM_DEPLOYMENT_SUMMARY.md # Helm troubleshooting guide
 └── README.md
 ```
 
@@ -197,9 +212,78 @@ npm run dev            # http://localhost:3000
 | User  | demo@taskflow.dev     | demo1234  |
 | User  | jane@taskflow.dev     | demo1234  |
 
+> ⚠️ **Security Note:** The credentials in this repository are for **demo/development purposes only**. In production:
+> - Use Kubernetes Secrets with encryption at rest
+> - Use external secret management (Vault, AWS Secrets Manager, etc.)
+> - Never commit real credentials to version control
+> - Use strong, randomly generated passwords
+> - Enable network policies and RBAC
+
 ---
 
-## ☸️ Kubernetes Deployment (KIND)
+## 🎯 Helm Deployment (Recommended)
+
+### Why Helm?
+Helm is the package manager for Kubernetes. Instead of managing 10+ YAML files manually, Helm:
+- Packages all resources into a single chart
+- Enables version control and rollback
+- Makes environment-specific deployments easy
+- Industry standard for production Kubernetes
+
+### Quick Start with Helm
+
+```bash
+# 1. Create namespace
+kubectl create namespace taskflow-helm
+
+# 2. Install the chart
+cd taskflow-chart
+helm install taskflow . -n taskflow-helm
+
+# 3. Check status
+helm status taskflow -n taskflow-helm
+kubectl get all -n taskflow-helm
+```
+
+### Helm Commands Reference
+
+```bash
+# Validate chart
+helm lint .
+
+# Preview manifests
+helm template taskflow . -n taskflow-helm
+
+# Install release
+helm install taskflow . -n taskflow-helm
+
+# Upgrade release
+helm upgrade taskflow . -n taskflow-helm
+
+# Rollback to previous version
+helm rollback taskflow -n taskflow-helm
+
+# Uninstall release
+helm uninstall taskflow -n taskflow-helm
+
+# List installed releases
+helm list -n taskflow-helm
+```
+
+### Access Helm Deployment
+
+Add to your hosts file (`C:\Windows\System32\drivers\etc\hosts` or `/etc/hosts`):
+```
+127.0.0.1  taskflow-helm.local
+```
+
+Then access:
+- Frontend: http://taskflow-helm.local
+- Backend API: http://taskflow-helm.local/api
+
+---
+
+## ☸️ Kubernetes Deployment (Manual YAML)
 
 ### Step 1 — Create KIND cluster
 ```bash
@@ -253,8 +337,8 @@ This project covers every concept:
 | 4    | ConfigMaps/Secrets | `k8s/01-configmap-secret.yaml`  |
 | 5    | PV/PVC/StorageClass| `k8s/02-storage.yaml`           |
 | 6    | Ingress            | `k8s/07-ingress.yaml`           |
-| 7    | HPA                | Inside `05-backend.yaml`        |
-| 8    | Helm Chart         | `helm package .`                |
+| 7    | Helm Chart         | `taskflow-chart/`               |
+| 8    | HPA                | Inside `05-backend.yaml`        |
 | 9    | Prometheus/Grafana | Add monitoring stack            |
 | 10   | ArgoCD             | GitOps deployment               |
 
