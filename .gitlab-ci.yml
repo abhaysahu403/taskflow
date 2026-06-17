@@ -4,6 +4,7 @@ stages:
   - backend-test
   - security
   - sast
+  - dependency-check
 
 validate:
   stage: validate
@@ -100,6 +101,29 @@ semgrep-sast:
   artifacts:
     paths:
       - semgrep-report.json
+    expire_in: 1 week
+
+  allow_failure: true
+
+  owasp-dependency-check:
+  stage: dependency-check
+
+  image:
+    name: owasp/dependency-check:latest
+    entrypoint: [""]
+
+  script:
+    - mkdir -p reports
+
+    - /usr/share/dependency-check/bin/dependency-check.sh
+      --scan .
+      --format HTML
+      --out reports
+
+  artifacts:
+    paths:
+      - reports/
+
     expire_in: 1 week
 
   allow_failure: true
