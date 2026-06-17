@@ -1,7 +1,7 @@
 stages:
   - validate
-  - frontend-build
-  - backend-test
+  - build
+  - test
   - security
   - sast
   - dependency-check
@@ -105,7 +105,7 @@ semgrep-sast:
 
   allow_failure: true
 
-  owasp-dependency-check:
+owasp-dependency-check:
   stage: dependency-check
 
   image:
