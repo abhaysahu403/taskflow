@@ -28,7 +28,7 @@ frontend-build:
       - frontend/dist
 
 backend-test:
-  stage: backend-test
+  stage: test
   image: node:20
 
   before_script:
