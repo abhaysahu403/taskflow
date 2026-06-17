@@ -1,0 +1,9 @@
+stages:
+  - validate
+
+validate:
+  stage: validate
+
+  script:
+    - echo "Pipeline Started"
+    - echo "TaskFlow CI Working"
