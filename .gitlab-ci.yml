@@ -3,6 +3,7 @@ stages:
   - frontend-build
   - backend-test
   - security
+  - sast
 
 validate:
   stage: validate
@@ -84,6 +85,22 @@ trivy-helm-scan:
   artifacts:
     paths:
       - trivy-helm-report.json
+    expire_in: 1 week
+
+  allow_failure: true
+
+semgrep-sast:
+  stage: sast
+
+  image:
+    name: semgrep/semgrep
+
+  script:
+    - semgrep scan --config auto --json --output semgrep-report.json
+
+  artifacts:
+    paths:
+      - semgrep-report.json
     expire_in: 1 week
 
   allow_failure: true
