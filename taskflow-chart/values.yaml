@@ -2,21 +2,21 @@ namespace: taskflow
 
 frontend:
   image: abhaysahu403/taskflow-frontend
-  tag: 0a91194d
+  tag: 667a5530
   replicas: 2
 
 backend:
   image: abhaysahu403/taskflow-backend
-  tag: 0a91194d
+  tag: 667a5530
   replicas: 2
 
 mysql:
   image: mysql
-  tag: 0a91194d
+  tag: 667a5530
 
 redis:
   image: redis
-  tag: 0a91194d
+  tag: 667a5530
 
 storage:
   size: 2Gi
