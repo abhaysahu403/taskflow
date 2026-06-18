@@ -5,6 +5,7 @@ stages:
   - security
   - sast
   - dependency-check
+  - docker
 
 validate:
   stage: validate
@@ -124,3 +125,43 @@ owasp-dependency-check:
       - reports/
 
   allow_failure: true
+
+docker-build-backend:
+  stage: docker
+
+  image: docker:latest
+
+  services:
+    - docker:dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+  script:
+    - docker build -t abhaysahu403/taskflow-backend:$CI_COMMIT_SHORT_SHA ./backend
+    - docker tag abhaysahu403/taskflow-backend:$CI_COMMIT_SHORT_SHA abhaysahu403/taskflow-backend:latest
+    - docker push abhaysahu403/taskflow-backend:$CI_COMMIT_SHORT_SHA
+    - docker push abhaysahu403/taskflow-backend:latest
+
+docker-build-frontend:
+  stage: docker
+
+  image: docker:latest
+
+  services:
+    - docker:dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+  script:
+    - docker build -t abhaysahu403/taskflow-frontend:$CI_COMMIT_SHORT_SHA ./frontend
+    - docker tag abhaysahu403/taskflow-frontend:$CI_COMMIT_SHORT_SHA abhaysahu403/taskflow-frontend:latest
+    - docker push abhaysahu403/taskflow-frontend:$CI_COMMIT_SHORT_SHA
+    - docker push abhaysahu403/taskflow-frontend:latest
