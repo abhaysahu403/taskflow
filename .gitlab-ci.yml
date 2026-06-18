@@ -216,17 +216,33 @@ update-helm-values:
 
     - echo "Updating Helm Chart Image Tags..."
 
-    - sed -i "s/tag: latest/tag: ${CI_COMMIT_SHORT_SHA}/g" taskflow-chart/values.yaml
+  update-helm-values:
+stage: gitops
 
-    - cat taskflow-chart/values.yaml
+image: alpine:latest
 
-    - git add taskflow-chart/values.yaml
+before_script:
+- apk add --no-cache git sed
 
-    - git commit -m "Update image tag ${CI_COMMIT_SHORT_SHA}" || echo "No changes"
+script:
+- git config --global user.email "[gitlab-ci@gitlab.com](mailto:gitlab-ci@gitlab.com)"
+- git config --global user.name "GitLab CI"
 
-    - 'git remote set-url origin https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/abhaysahucse/taskflow.git'
+```
+- echo "Updating Helm Chart Image Tags..."
 
-    - git push origin HEAD:main
+- 'sed -i "s/tag: latest/tag: ${CI_COMMIT_SHORT_SHA}/g" taskflow-chart/values.yaml'
 
-  only:
-    - main
+- cat taskflow-chart/values.yaml
+
+- git add taskflow-chart/values.yaml
+
+- git commit -m "Update image tag ${CI_COMMIT_SHORT_SHA}" || echo "No changes"
+
+- 'git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@gitlab.com/abhaysahucse/taskflow.git"'
+
+- 'git push origin "HEAD:main"'
+```
+
+only:
+- main
