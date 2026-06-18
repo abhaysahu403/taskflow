@@ -217,8 +217,7 @@ update-helm-values:
 
     - echo "Updating Helm Chart Image Tags..."
 
-    - sed -i "/frontend:/,/replicas:/ s/tag: .*/tag: ${CI_COMMIT_SHORT_SHA}/" taskflow-chart/values.yaml
-    - sed -i "/backend:/,/replicas:/ s/tag: .*/tag: ${CI_COMMIT_SHORT_SHA}/" taskflow-chart/values.yaml
+    - sed -i "s/tag: .*/tag: ${CI_COMMIT_SHORT_SHA}/g" taskflow-chart/values.yaml
 
     - cat taskflow-chart/values.yaml
     - git status
