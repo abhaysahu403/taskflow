@@ -7,6 +7,7 @@ stages:
   - dependency-check
   - docker
   - gitops
+  - deploy-verify
 
 validate:
   stage: validate
@@ -232,3 +233,11 @@ update-helm-values:
 
   only:
     - main
+
+deployment-check:
+  stage: deploy-verify
+
+  image: bitnami/kubectl:latest
+
+  script:
+    - echo "Verify deployment"
