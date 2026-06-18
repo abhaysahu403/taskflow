@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 2
+  replicas: {{ .Values.frontend.replicas }}
   selector:
     matchLabels:
       app: frontend
@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: taskflow-frontend:latest
-        imagePullPolicy: Never
+        image: "{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
 ---

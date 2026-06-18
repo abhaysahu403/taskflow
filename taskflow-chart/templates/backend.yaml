@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: 2
+  replicas: {{ .Values.backend.replicas }}
   selector:
     matchLabels:
       app: backend
@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: taskflow-backend:latest
-        imagePullPolicy: Never
+        image: "{{ .Values.backend.image }}:{{ .Values.backend.tag }}"
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         envFrom:

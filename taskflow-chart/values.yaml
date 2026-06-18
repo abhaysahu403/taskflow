@@ -1,13 +1,13 @@
 namespace: taskflow
 
 frontend:
-  image: taskflow-frontend
+  image: abhaysahu403/taskflow-frontend
   tag: latest
   replicas: 2
 
 backend:
-  image: taskflow-backend
-  tag: v5
+  image: abhaysahu403/taskflow-backend
+  tag: latest
   replicas: 2
 
 mysql:
@@ -22,4 +22,4 @@ storage:
   size: 2Gi
 
 ingress:
-  host: taskflow.local
+  host: taskflow-gitops.local
