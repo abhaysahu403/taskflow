@@ -6,6 +6,7 @@ stages:
   - sast
   - dependency-check
   - docker
+  - gitops
 
 validate:
   stage: validate
@@ -200,3 +201,33 @@ trivy-image-frontend:
     expire_in: 1 week
 
   allow_failure: true
+
+update-helm-values:
+  stage: gitops
+
+  image: alpine:latest
+
+  before_script:
+    - apk add --no-cache git sed
+
+  script:
+    - git config --global user.email "gitlab-ci@gitlab.com"
+    - git config --global user.name "GitLab CI"
+
+    - echo "Updating Helm Chart Image Tags..."
+
+    - sed -i "s/tag: latest/tag: ${CI_COMMIT_SHORT_SHA}/g" taskflow-chart/values.yaml
+
+    - cat taskflow-chart/values.yaml
+
+    - git add taskflow-chart/values.yaml
+
+    - |
+      git commit -m "GitOps: update image tag ${CI_COMMIT_SHORT_SHA}" || echo "No changes"
+
+    - git remote set-url origin https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/abhaysahucse/taskflow.git
+
+    - git push origin HEAD:main
+
+  only:
+    - main
