@@ -224,7 +224,7 @@ update-helm-values:
 
     - git commit -m "Update image tag ${CI_COMMIT_SHORT_SHA}" || echo "No changes"
 
-    - git remote set-url origin https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/abhaysahucse/taskflow.git
+    - 'git remote set-url origin https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/abhaysahucse/taskflow.git'
 
     - git push origin HEAD:main
 
