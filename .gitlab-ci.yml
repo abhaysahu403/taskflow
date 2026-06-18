@@ -165,3 +165,38 @@ docker-build-frontend:
     - docker tag abhaysahu403/taskflow-frontend:$CI_COMMIT_SHORT_SHA abhaysahu403/taskflow-frontend:latest
     - docker push abhaysahu403/taskflow-frontend:$CI_COMMIT_SHORT_SHA
     - docker push abhaysahu403/taskflow-frontend:latest
+
+trivy-image-backend:
+  stage: security
+
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy image --format json -o backend-image-report.json abhaysahu403/taskflow-backend:latest
+
+  artifacts:
+    paths:
+      - backend-image-report.json
+    expire_in: 1 week
+
+  allow_failure: true
+
+
+trivy-image-frontend:
+  stage: security
+
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy image --format json -o frontend-image-report.json abhaysahu403/taskflow-frontend:latest
+
+  artifacts:
+    paths:
+      - frontend-image-report.json
+    expire_in: 1 week
+
+  allow_failure: true
