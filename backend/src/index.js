@@ -33,6 +33,7 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
+app.use('/api/auth', require('./routes/googleAuth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/login', require('./routes/login'));
 app.use('/api/products', require('./routes/products'));

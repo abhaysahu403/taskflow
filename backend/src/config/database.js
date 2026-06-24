@@ -38,9 +38,10 @@ const initDB = async () => {
       id VARCHAR(36) PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      avatar VARCHAR(10) DEFAULT '👤',
+      password VARCHAR(255) DEFAULT NULL,
+      avatar VARCHAR(500) DEFAULT '👤',
       role ENUM('admin','user') DEFAULT 'user',
+      google_id VARCHAR(255) DEFAULT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
