@@ -1,0 +1,17 @@
+# rolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: rbac-lab
+
+subjects:
+- kind: ServiceAccount
+  name: test-sa
+  namespace: rbac-lab
+
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
