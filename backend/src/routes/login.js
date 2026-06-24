@@ -20,6 +20,12 @@ router.post('/', async (req, res) => {
     if (!rows.length) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const user = rows[0];
+    
+    // Check if user has a password (Google SSO users have NULL password)
+    if (!user.password) {
+      return res.status(401).json({ success: false, message: 'Please use Google Sign In for this account' });
+    }
+    
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 

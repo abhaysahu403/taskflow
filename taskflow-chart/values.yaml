@@ -7,7 +7,7 @@ frontend:
 
 backend:
   image: abhaysahu403/taskflow-backend
-  tag: google-sso-cors
+  tag: google-sso-cors-fix
   replicas: 2
 
 mysql:
