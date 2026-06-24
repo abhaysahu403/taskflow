@@ -9,7 +9,14 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://frontend-service',
+    'http://taskflow-gitops.local',
+    'http://4.247.241.172',
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
