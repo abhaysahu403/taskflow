@@ -72,6 +72,8 @@ router.post("/google", async (req, res) => {
       {
         id: user.id,
         email: user.email,
+        name: user.name,
+        role: user.role || "user",
       },
       process.env.JWT_SECRET,
       {
