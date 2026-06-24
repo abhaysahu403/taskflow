@@ -1,9 +1,10 @@
+import { GoogleLogin } from "@react-oauth/google";
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
-  const { login, register } = useAuth();
+  const { login, register, googleLogin } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState('login'); // login | register
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -132,6 +133,29 @@ export default function LoginPage() {
                 <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>or</span>
                 <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
+              <div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: "15px",
+  }}
+>
+  <GoogleLogin
+    onSuccess={async (credentialResponse) => {
+      try {
+        await googleLogin(
+          credentialResponse.credential
+        );
+        navigate("/dashboard");
+      } catch (err) {
+        setError("Google Login Failed");
+      }
+    }}
+    onError={() => {
+      setError("Google Login Failed");
+    }}
+  />
+</div>
               <button onClick={demoLogin} className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center' }} disabled={loading}>
                 🎯 Try Demo Account
               </button>
